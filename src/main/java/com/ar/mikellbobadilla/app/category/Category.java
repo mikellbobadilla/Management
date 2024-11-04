@@ -15,6 +15,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Getter
 @Setter
 @Builder
+@ToString(exclude = {"parent", "subcategories"})
+@EqualsAndHashCode(exclude = {"parent", "subcategories"})
 public class Category {
     @Id
     @GeneratedValue(strategy = IDENTITY)

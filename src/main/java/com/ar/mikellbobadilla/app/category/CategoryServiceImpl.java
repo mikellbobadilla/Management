@@ -2,15 +2,11 @@ package com.ar.mikellbobadilla.app.category;
 
 import com.ar.mikellbobadilla.app.exceptions.ResourceException;
 import com.ar.mikellbobadilla.app.exceptions.ResourceNotFoundException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -19,82 +15,47 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
 
     @Override
-    public List<CategoryResponse> getAllCategories() {
-        var categories = repository.findAllByParentIsNull();
-        return categoryResponseList(categories);
+    public List<Category> getAllCategories() {
+        return repository.findAll(Sort.by("name").ascending());
     }
 
     @Override
-    public SubcategoryResponse createCategory(CategoryRequest request) {
-        Category parent = null;
+    public Category getCategory(Integer categoryId) {
+        return repository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
+
+    @Override
+    public Category createCategory(CategoryRequest request) {
 
         if (repository.existsByNameIgnoreCase(request.name())) {
-            throw new ResourceException("Name already exists");
+            throw new ResourceException("Category name exists. Try again");
         }
 
-        if (request.parentId() != null) {
-            parent = repository.findByIdAndParentIsNull(request.parentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
-        }
-
-        Category category = Category.builder()
+        Category newCategory = Category.builder()
                 .name(request.name())
-                .parent(parent)
                 .build();
-        return subcategoryResponse(repository.save(category));
+
+        return repository.save(newCategory);
     }
 
-    @Transactional(rollbackFor = {})
     @Override
-    public SubcategoryResponse updateCategory(Integer categoryId, CategoryRequest request) {
-        Category category = repository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-        Category parent = category.getParent();
+    public Category updateCategory(Integer categoryId, CategoryRequest request) {
 
         if (repository.existsByNameIgnoreCaseAndIdNot(request.name(), categoryId)) {
-            throw new ResourceException("Name already exists");
+            throw new ResourceException("Category name exists. Try again");
         }
 
-        if (request.parentId() != null && !Objects.equals(parent.getId(), request.parentId())) {
-            parent = repository.findByIdAndParentIsNull(request.parentId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Parent not found"));
-        }
-
-        if (request.parentId() == null) {
-            parent = null;
-        }
+        Category category = repository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         category.setName(request.name());
-        category.setParent(parent);
 
-        return subcategoryResponse(repository.save(category));
+        return repository.save(category);
     }
 
     @Override
     public void deleteCategory(Integer categoryId) {
-        try {
-            repository.deleteById(categoryId);
-        } catch (DataIntegrityViolationException | ConstraintViolationException exc) {
-            throw new ResourceException("Cannot delete category");
-        }
-    }
-
-    private SubcategoryResponse subcategoryResponse(Category category) {
-        return new SubcategoryResponse(category.getId(), category.getName());
-    }
-
-    private CategoryResponse categoryResponse(Category category) {
-        var subcategories = category.getSubcategories() != null
-                ? category.getSubcategories().stream().map(this::subcategoryResponse).toList()
-                : new ArrayList<SubcategoryResponse>();
-        return new CategoryResponse(
-                category.getId(),
-                category.getName(),
-                subcategories
-        );
-    }
-
-    private List<CategoryResponse> categoryResponseList(List<Category> categories) {
-        return categories.stream().map(this::categoryResponse).toList();
+        repository.deleteById(categoryId);
     }
 }

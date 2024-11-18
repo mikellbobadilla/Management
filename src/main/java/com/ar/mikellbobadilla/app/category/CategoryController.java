@@ -15,26 +15,32 @@ public class CategoryController {
 
     private final CategoryService service;
 
-    @ResponseStatus(OK)
     @GetMapping
-    List<CategoryResponse> getAll() {
+    @ResponseStatus(OK)
+    List<Category> getCategories() {
         return service.getAllCategories();
     }
 
-    @ResponseStatus(CREATED)
+    @GetMapping("/{categoryId}")
+    @ResponseStatus(OK)
+    Category getCategory(@PathVariable Integer categoryId) {
+        return service.getCategory(categoryId);
+    }
+
     @PostMapping
-    SubcategoryResponse postCategory(@Valid @RequestBody CategoryRequest request) {
+    @ResponseStatus(CREATED)
+    Category postCategory(@Valid @RequestBody CategoryRequest request) {
         return service.createCategory(request);
     }
 
-    @ResponseStatus(OK)
     @PutMapping("/{categoryId}")
-    SubcategoryResponse putCategory(@PathVariable Integer categoryId, @Valid @RequestBody CategoryRequest request) {
+    @ResponseStatus(OK)
+    Category putCategory(@PathVariable Integer categoryId, @Valid @RequestBody CategoryRequest request) {
         return service.updateCategory(categoryId, request);
     }
 
-    @ResponseStatus(NO_CONTENT)
     @DeleteMapping("/{categoryId}")
+    @ResponseStatus(NO_CONTENT)
     void deleteCategory(@PathVariable Integer categoryId) {
         service.deleteCategory(categoryId);
     }

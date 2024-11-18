@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record ProductRequest(
         @NotBlank
@@ -18,6 +19,6 @@ public record ProductRequest(
         @DecimalMin(inclusive = false, value = "0")
         BigDecimal cost,
         @NotNull
-        Integer categoryId
+        List<Integer> categories
 ) {
 }

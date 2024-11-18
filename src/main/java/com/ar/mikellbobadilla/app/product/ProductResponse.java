@@ -1,6 +1,9 @@
 package com.ar.mikellbobadilla.app.product;
 
+import com.ar.mikellbobadilla.app.category.Category;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 public record ProductResponse(
         Integer id,
@@ -9,6 +12,6 @@ public record ProductResponse(
         Integer stock,
         BigDecimal price,
         BigDecimal cost,
-        String category
+        List<Category> categories
 ) {
 }

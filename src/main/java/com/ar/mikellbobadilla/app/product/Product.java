@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -12,9 +13,9 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Table(name = "Products")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
+@Getter @Setter @Builder
+@ToString(exclude = "categories")
+@EqualsAndHashCode(exclude = "categories")
 public class Product {
     @Id @GeneratedValue(strategy = IDENTITY)
     private Integer id;
@@ -24,7 +25,11 @@ public class Product {
     private Integer stock;
     private BigDecimal price;
     private BigDecimal cost;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToMany
+    @JoinTable(
+        name = "product_category",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories;
 }

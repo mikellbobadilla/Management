@@ -3,11 +3,13 @@ package com.ar.mikellbobadilla.app.category;
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryResponse> getAllCategories();
+    List<Category> getAllCategories();
 
-    SubcategoryResponse createCategory(CategoryRequest request);
+    Category getCategory(Integer categoryId);
 
-    SubcategoryResponse updateCategory(Integer categoryId, CategoryRequest request);
+    Category createCategory(CategoryRequest request);
+
+    Category updateCategory(Integer categoryId, CategoryRequest request);
 
     void deleteCategory(Integer categoryId);
 }

@@ -56,12 +56,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProduct(Integer productId, ProductRequest request) {
-        return null;
+
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        List<Category> categories = categoryRepository.findAllByIdIn(request.categories());
+
+        product.setName(request.name());
+        product.setDescription(request.description());
+        product.setStock(request.stock());
+        product.setPrice(request.price());
+        product.setCost(request.cost());
+        product.setCategories(categories);
+
+        return parseToDTO(repository.save(product));
     }
 
     @Override
     public void deleteProduct(Integer productId) {
-
+        repository.deleteById(productId);
     }
 
     private List<ProductResponse> parseListProductsToDTOList(List<Product> products) {

@@ -3,7 +3,7 @@ package com.ar.mikellbobadilla.app.product;
 import com.ar.mikellbobadilla.app.utils.PaginatedResponse;
 
 public interface ProductService {
-    PaginatedResponse<ProductResponse> getAllProducts(int page, int size);
+    PaginatedResponse<ProductResponse> getAllProducts(int page, int size, String productName, String categoryName);
     ProductResponse getProduct(Integer productId);
     ProductResponse createProduct(ProductRequest request);
     ProductResponse updateProduct(Integer productId, ProductRequest request);

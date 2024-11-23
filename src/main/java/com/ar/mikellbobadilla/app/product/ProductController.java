@@ -32,9 +32,11 @@ public class ProductController {
     @ResponseStatus(OK)
     PaginatedResponse<ProductResponse> getAllProducts(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String category
     ) {
-        return service.getAllProducts(page, size);
+        return service.getAllProducts(page, size, name, category);
     }
     
     @GetMapping("/{productId}")

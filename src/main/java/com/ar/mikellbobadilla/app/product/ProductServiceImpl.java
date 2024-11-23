@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +22,19 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public PaginatedResponse<ProductResponse> getAllProducts(int page, int size) {
+    public PaginatedResponse<ProductResponse> getAllProducts(int page, int size, String productName, String categoryName) {
+        Specification<Product> spec = Specification.where(null);
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        Page<Product> productPage = repository.findAll(pageable);
+
+        if (productName != null && !productName.isEmpty()) {
+            spec = spec.and(ProductSpecs.hasNameLike(productName));
+        }
+
+        if (categoryName != null && !categoryName.isEmpty()) {
+            spec = spec.and(ProductSpecs.hasCategoryLike(categoryName));
+        }
+
+        Page<Product> productPage = repository.findAll(spec, pageable);
 
         return new PaginatedResponse<>(
                 parseListProductsToDTOList(productPage.getContent()),

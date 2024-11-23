@@ -27,7 +27,11 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
 
         if (keyword != null && !keyword.isEmpty()) {
-            spec = spec.or(ProductSpecs.hasNameLike(keyword).or(ProductSpecs.hasCategoryLike(keyword)));
+            spec = spec.or(
+                    ProductSpecs.hasNameLike(keyword)
+                            .or(ProductSpecs.hasCategoryLike(keyword))
+                            .or(ProductSpecs.hasId(keyword))
+            );
         }
 
         Page<Product> productPage = repository.findAll(spec, pageable);

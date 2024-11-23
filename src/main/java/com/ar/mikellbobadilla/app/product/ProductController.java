@@ -33,10 +33,9 @@ public class ProductController {
     PaginatedResponse<ProductResponse> getAllProducts(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
-        @RequestParam(required = false) String name,
-        @RequestParam(required = false) String category
+        @RequestParam(required = false) String keyword
     ) {
-        return service.getAllProducts(page, size, name, category);
+        return service.getAllProducts(page, size, keyword);
     }
     
     @GetMapping("/{productId}")

@@ -22,16 +22,12 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public PaginatedResponse<ProductResponse> getAllProducts(int page, int size, String productName, String categoryName) {
+    public PaginatedResponse<ProductResponse> getAllProducts(int page, int size, String keyword) {
         Specification<Product> spec = Specification.where(null);
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
 
-        if (productName != null && !productName.isEmpty()) {
-            spec = spec.and(ProductSpecs.hasNameLike(productName));
-        }
-
-        if (categoryName != null && !categoryName.isEmpty()) {
-            spec = spec.and(ProductSpecs.hasCategoryLike(categoryName));
+        if (keyword != null && !keyword.isEmpty()) {
+            spec = spec.or(ProductSpecs.hasNameLike(keyword).or(ProductSpecs.hasCategoryLike(keyword)));
         }
 
         Page<Product> productPage = repository.findAll(spec, pageable);
